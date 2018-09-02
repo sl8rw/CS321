@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2016
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BSTtree", "BSTtree\BSTtree.csproj", "{DD37A8E4-4340-4BCD-A9F6-3663E90234D0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DD37A8E4-4340-4BCD-A9F6-3663E90234D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD37A8E4-4340-4BCD-A9F6-3663E90234D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD37A8E4-4340-4BCD-A9F6-3663E90234D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD37A8E4-4340-4BCD-A9F6-3663E90234D0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {168E9ECC-5813-4436-A09E-BC8C46A16112}
+	EndGlobalSection
+EndGlobal

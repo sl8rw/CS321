@@ -1,0 +1,7 @@
+C:\Users\slaterweinstock\cs321-sweinsto\BSTtree\BSTtree\BSTtree\bin\Debug\BSTtree.exe.config
+C:\Users\slaterweinstock\cs321-sweinsto\BSTtree\BSTtree\BSTtree\bin\Debug\BSTtree.exe
+C:\Users\slaterweinstock\cs321-sweinsto\BSTtree\BSTtree\BSTtree\bin\Debug\BSTtree.pdb
+C:\Users\slaterweinstock\cs321-sweinsto\BSTtree\BSTtree\BSTtree\obj\Debug\BSTtree.csprojAssemblyReference.cache
+C:\Users\slaterweinstock\cs321-sweinsto\BSTtree\BSTtree\BSTtree\obj\Debug\BSTtree.csproj.CoreCompileInputs.cache
+C:\Users\slaterweinstock\cs321-sweinsto\BSTtree\BSTtree\BSTtree\obj\Debug\BSTtree.exe
+C:\Users\slaterweinstock\cs321-sweinsto\BSTtree\BSTtree\BSTtree\obj\Debug\BSTtree.pdb
