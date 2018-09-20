@@ -1,0 +1,10 @@
+C:\Users\slaterweinstock\cs321-sweinsto\NotepadApp\shw_hw3_cs321\shw_hw3_cs321\bin\Debug\shw_hw3_cs321.exe.config
+C:\Users\slaterweinstock\cs321-sweinsto\NotepadApp\shw_hw3_cs321\shw_hw3_cs321\bin\Debug\shw_hw3_cs321.exe
+C:\Users\slaterweinstock\cs321-sweinsto\NotepadApp\shw_hw3_cs321\shw_hw3_cs321\bin\Debug\shw_hw3_cs321.pdb
+C:\Users\slaterweinstock\cs321-sweinsto\NotepadApp\shw_hw3_cs321\shw_hw3_cs321\obj\Debug\shw_hw3_cs321.csprojAssemblyReference.cache
+C:\Users\slaterweinstock\cs321-sweinsto\NotepadApp\shw_hw3_cs321\shw_hw3_cs321\obj\Debug\shw_hw3_cs321.Form1.resources
+C:\Users\slaterweinstock\cs321-sweinsto\NotepadApp\shw_hw3_cs321\shw_hw3_cs321\obj\Debug\shw_hw3_cs321.Properties.Resources.resources
+C:\Users\slaterweinstock\cs321-sweinsto\NotepadApp\shw_hw3_cs321\shw_hw3_cs321\obj\Debug\shw_hw3_cs321.csproj.GenerateResource.cache
+C:\Users\slaterweinstock\cs321-sweinsto\NotepadApp\shw_hw3_cs321\shw_hw3_cs321\obj\Debug\shw_hw3_cs321.csproj.CoreCompileInputs.cache
+C:\Users\slaterweinstock\cs321-sweinsto\NotepadApp\shw_hw3_cs321\shw_hw3_cs321\obj\Debug\shw_hw3_cs321.exe
+C:\Users\slaterweinstock\cs321-sweinsto\NotepadApp\shw_hw3_cs321\shw_hw3_cs321\obj\Debug\shw_hw3_cs321.pdb
