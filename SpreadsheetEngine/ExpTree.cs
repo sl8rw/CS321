@@ -54,7 +54,21 @@ namespace CptS321
                 }
                 else if (mOp == '/') //division
                 {
-                    result = (leftExp) / (rightExp);
+                    if (rightExp != 0)
+                    {
+                        result = (leftExp) / (rightExp);
+                    }
+
+                    else
+                    {
+                        //tree can't handle the exception, but the node might be able to, if you go to Node, then data corruption
+                        //up in the spreadsheet, put try catch in the spreadsheet around the evaluate.
+                        //#Div/0! in excel is an example of exception handling
+                        //add to unit tests that tests for divide by 0 and catch the exception
+                        result=Double.NaN; //exception is thrown when you divide by 0 ->expanded return set
+                        Console.WriteLine("Error: You attempted to divide by 0...\n");
+                        
+                    }
                 }
 
                 return result;
@@ -145,6 +159,7 @@ namespace CptS321
                             j = i;
                         }
 
+                        
                         break;
                 }
             }
