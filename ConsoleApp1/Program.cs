@@ -13,7 +13,7 @@ namespace CptS321
         public void Menu()
         {
             int flag = 0;
-            string expressionString = "A1-12-C1"; 
+            string expressionString = "(A1-12-C1)"; //now having error in parentheses
             string varName;
             string varValue;
             double numValue;
@@ -34,11 +34,11 @@ namespace CptS321
                 }*/
 
                 Console.WriteLine("(1): Update Expression");
-                Console.WriteLine("(2) Update the value");
-                Console.WriteLine("(3) Evaluate the tree");
-                Console.WriteLine("(4) GoodBye");
+                Console.WriteLine("(2): Update the value");
+                Console.WriteLine("(3): Evaluate the tree");
+                Console.WriteLine("(4): GoodBye");
                 string userInput = Console.ReadLine().ToString();
-
+                Console.WriteLine("You entered option {0}", userInput);
                 switch (userInput)
                 {
                     case "1":
@@ -53,11 +53,14 @@ namespace CptS321
                         varValue = Console.ReadLine();
                         numValue = Convert.ToDouble(varValue); //need to make the value a double
 
-                        newExpressionTree.SetVar(varName, numValue); //takes string and double
+                        Console.WriteLine("Variable Name: {0}\nVariable Value: {1}", varName, numValue); //updated by SHW for readability
+
+                        newExpressionTree.SetVar(varName, numValue); //takes string and double, makes brand new exp tree
                         break;
                     case "3":
-                        Console.WriteLine(newExpressionTree.Eval());
+                        Console.WriteLine("The result is: {0}", newExpressionTree.Eval());
                         break;
+                    
                     case "4":
                         flag = 1; //exit flag
                         break;
