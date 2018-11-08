@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace CptS321
 {
@@ -19,44 +16,49 @@ namespace CptS321
             public abstract double Eval();
         }
 
+        Dictionary<string, int> precedenceDictionary = new Dictionary<string, int>()
+        {
+            {"*", 2}, {"/", 2}, {"+", 1}, {"-", 1}, {"(", 0}, {")", 0}
+        };
+
         private Node mRoot;
-        private static Dictionary<string, double> mDict;
+        private static Dictionary<string, double> mDict = new Dictionary<string, double>();
+        public List<string> varNameList = new List<string>();
+        private Stack<string> oStack = new Stack<string>();
+        public string tempExp { get; private set; }
 
         private class OperationNode : Node
         {
-            private char mOp;
-            private Node mLeft, mRight;
+            private string mOp;
+            public Node mLeft, mRight;
 
-            public OperationNode(char nOp, Node nL, Node nR)
+            public OperationNode(string nOp)
             {
-                this.mOp = nOp;
-                this.mLeft = nL;
-                this.mRight = nR;
+                mOp = nOp;
+                mLeft = null;
+                mRight = null;
             }
 
-            public override double Eval() //overwrites from Node abstract class
+            public override double Eval()
             {
-                double leftExp = mLeft.Eval(); //save evaluation from left side to leftExp var
-                double rightExp = mRight.Eval(); //save evaluation from right side to rightExp var
-                double result = 0.0;
-
-                if (mOp == '+') //addition
+                var result = 0.0;
+                if (mOp == "+") //addition
                 {
-                    result = leftExp + rightExp;
+                    result = mLeft.Eval() + mRight.Eval();
                 }
-                else if (mOp == '-') //subtraction
+                else if (mOp == "-") //subtraction
                 {
-                    result = leftExp - rightExp;
+                    result = mLeft.Eval() - mRight.Eval();
                 }
-                else if (mOp == '*') //multiplication
+                else if (mOp == "*") //multiplication
                 {
-                    result = leftExp * rightExp;
+                    result = mLeft.Eval() * mRight.Eval();
                 }
-                else if (mOp == '/') //division
+                else if (mOp == "/") //division
                 {
-                    if (rightExp != 0)
+                    if (mRight.Eval() != 0)
                     {
-                        result = (leftExp) / (rightExp);
+                        result = mLeft.Eval() / mRight.Eval();
                     }
 
                     else
@@ -65,38 +67,91 @@ namespace CptS321
                         //up in the spreadsheet, put try catch in the spreadsheet around the evaluate.
                         //#Div/0! in excel is an example of exception handling
                         //add to unit tests that tests for divide by 0 and catch the exception
-                        result=Double.NaN; //exception is thrown when you divide by 0 ->expanded return set
-                        Console.WriteLine("Error: You attempted to divide by 0...\n");
-                        
+                        result = double.NaN; //exception is thrown when you divide by 0 ->expanded return set
+                        //Console.WriteLine("Error: You attempted to divide by 0...\n");
                     }
                 }
 
                 return result;
-
             }
-
-
         }
+
+        //redo evaluation using the shunting yard algorithm-->WIKI pseudocode
+        private void shuntingYardAlgorithm()
+        {
+            Stack<string> opStack = new Stack<string>();
+            //make regex
+            var regExPattern = @"([-/\+\*\(\)])";
+            var token = Regex.Split(tempExp, regExPattern).Where(str => str != string.Empty).ToList();
+            foreach (var t in token)
+                if (!precedenceDictionary.ContainsKey(t))
+                {
+                    oStack.Push(t);
+                }
+                else if (t == "(")
+                {
+                    opStack.Push(t);
+                }
+                else if (t == ")")
+                {
+                    //neeed to remove parentheses from R to L
+                    while (opStack.Count != 0 && opStack.Peek() != "(") oStack.Push(opStack.Pop());
+
+                    if (opStack.Peek() == "(") opStack.Pop();
+                }
+                else if (precedenceDictionary.ContainsKey(t) && (opStack.Count() == 0 || opStack.Peek() == "("))
+                {
+                    opStack.Push(t);
+                }
+                else if (precedenceDictionary.ContainsKey(t) &&
+                         precedenceDictionary[t] >= precedenceDictionary[opStack.Peek()])
+                {
+                    opStack.Push(t);
+                }
+                else if (precedenceDictionary.ContainsKey(t) &&
+                         (precedenceDictionary[t] <= precedenceDictionary[opStack.Peek()]))
+                {
+                    while (opStack.Count() != 0 &&
+                           (precedenceDictionary[t] <= precedenceDictionary[opStack.Peek()]))
+                        oStack.Push(opStack.Pop());
+
+                    opStack.Push(t);
+                }
+
+            while (opStack.Count != 0) oStack.Push(opStack.Pop());
+
+            Stack<string> final = new Stack<string>();
+            while (oStack.Count() != 0) final.Push(oStack.Pop());
+
+            oStack = final;
+        }
+
 
         private class VariableNode : Node //this is in case the user inserts a variable
         {
-            private string mVar;
+            public string mVar;
+            private double val;
 
             public VariableNode(string nVar)
             {
-                this.mVar = nVar;
+                mVar = nVar;
+                val = 0.0;
             }
 
             public override double Eval()
             {
                 //we have a variable, so we need to assign the value to the variable
 
-                if (!mDict.ContainsKey(mVar))
+                try
                 {
-                    mDict[mVar] = 0.0; //if the variable does not exist, than the variable needs to be initialized
+                    val = mDict[mVar];
+                    return val;
                 }
 
-                return mDict[mVar];
+                catch (KeyNotFoundException)
+                {
+                    return double.NaN;
+                }
             }
         }
 
@@ -106,7 +161,7 @@ namespace CptS321
 
             public NumberNode(double nVal)
             {
-                this.mVal = nVal;
+                mVal = nVal;
             }
 
             public override double Eval()
@@ -114,159 +169,90 @@ namespace CptS321
                 return mVal;
             }
         }
-        private Node BuildNodes(string expression)
+    
+
+    public void SetVar(string varName, double varValue)
         {
-            double mVal;
-            
-            if (double.TryParse(expression, out mVal))
+            try
             {
-                return new NumberNode(mVal);
+                mDict.Add(varName, varValue);
             }
-            else
+            catch
             {
-                return new VariableNode(expression); //if not a number, it's a variable
+                mDict[varName] = varValue;
             }
         }
 
-        private int BuildTreeHelper(string expression) //gets an index value
-        {
-            int p = 0;
-            int length = expression.Length;
-            //int i = length - 1;
-            int j = -1;
-            for (int i=expression.Length-1; i >= 0; i--)
-            {
-                switch (expression[i]) //need to now update so that it accepts ()s
-                {  //just when we hit an expression we have to build tree, empty cases allowed in c#
-                    case '(': 
-                        p++;
-                        break;
-                    case ')':
-                        p--; 
-                        break;
-                    case '+':
-                    case '-':
-                        if (p == 0) 
-                        {
-                            return i;
-                        }
-
-                        break;
-                    case '*':
-                    case '/':
-                        if ((p == 0) && (j == -1)) 
-                        {
-                            j = i;
-                        }
-
-                        
-                        break;
-                }
-            }
-
-            return j;
-        }
-
-        private static int ParenthesesCheck(string expression) //returns 1 if the parentheses are enclosed, 0 o.w.
-        {
-            int p = 0;
-            //int length = expression.Length - 1;
-            int flag = 0;
-
-                if (expression[0]=='(' && expression[expression.Length-1]==')')
-                {
-                    for (int i=1; i < expression.Length-1; i++)
-                    {
-                        switch (expression[i])
-                        {
-                            case '(': //start
-                                p++;
-                                break;
-                            case ')': //end parentheses, ensures they are closed
-                                if (p == 0)
-                                {
-                                    flag = 0; //false
-                                }
-
-                                p--;
-                                break;
-
-                            default:
-                                //Console.WriteLine("Error in parentheses");
-                                break;
-                        }
-                    }
-
-                    if (p == 0)
-                    {
-                        flag = 1; //parentheses are enclosed
-                    }
-
-                    
-            
-            }
-
-            
-
-            return flag;
-        }
-
-
-        private Node BuildTree(string expression)
-        {
-            int flag = ParenthesesCheck(expression); //if one they are enclosed, 0 o.w.
-            int i = 0;
-            while (flag == 1) //1 means enclosed
-            {
-                expression = expression.Substring(1, expression.Length - 2);
-                flag = ParenthesesCheck(expression);
-
-            }
-
-            i = BuildTreeHelper(expression);
-
-            if (i != -1)
-            {
-                return new OperationNode(expression[i], BuildTree(expression.Substring(0, i)),
-                    BuildTree(expression.Substring(i+1)));
-            }
-
-            return BuildNodes(expression);
-
-
-        }
-
-        
-       public ExpTree(string expression)
-        {
-            mDict = new Dictionary<string, double>();
-            this.mRoot = BuildTree(expression);
-            mDict.Clear(); //just clears the values when I close out
-
-        }
-
-        
-
-        public void SetVar(string varName, double varValue)
-        {
-            mDict[varName] = varValue;
-        }
 
         public double Eval()
         {
-           if (mRoot != null)//not done
+            try
             {
                 return mRoot.Eval();
             }
-           else
-           {
-               {
-                   return double.NaN;
-               }
-           }
+            catch (NullReferenceException)
 
+            {
+                return double.NaN;
+            }
         }
 
-      
+        private void BuildTree()
+        {
+            shuntingYardAlgorithm();
+            var newStack = new Stack<Node>();
+            while (oStack.Count() != 0)
+            {
+                if (precedenceDictionary.ContainsKey(oStack.Peek()))
+                {
+                    var newOp = new OperationNode(oStack.Pop());
+                    try
+                    {
+                        newOp.mRight = newStack.Pop();
+                    }
+                    catch
+
+                    {
+                        newOp.mRight = null;
+                    }
+
+                    try
+                    {
+                        newOp.mLeft = newStack.Pop();
+                    }
+                    catch
+                    {
+                        newOp.mLeft = null;
+                    }
+
+                    newStack.Push(newOp);
+                }
+                else
+                {
+                    if (Double.TryParse(oStack.Peek(), out var value))
+                    {
+                        var tempNum = new NumberNode(value);
+                        newStack.Push(tempNum);
+                        oStack.Pop();
+                    }
+                    else
+                    {
+                        var tempVar = new VariableNode(oStack.Pop());
+                        varNameList.Add(tempVar.mVar);
+                        newStack.Push(tempVar);
+                    }
+                }
+            }
+
+            mRoot = newStack.Pop();
+        }
+
+        public ExpTree(string expression)
+        {
+            mDict.Clear();
+            tempExp = expression;
+            varNameList.Clear();
+            BuildTree();
+        }
     }
 }

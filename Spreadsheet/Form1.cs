@@ -33,6 +33,8 @@ namespace Spreadsheet
             dataGridView2.Columns.Clear();
             ss =new CptS321.Spreadsheet(26,50);
             ss.CellPropertyChanged += Form1CellPropertyChanged; //subscription
+            dataGridView2.CellBeginEdit += editCell;
+            dataGridView2.CellEndEdit += endEdit;
            
             for (int i = 65; i <= 90; i++) //ASCII codes for capital letters A - Z
             {
@@ -50,7 +52,7 @@ namespace Spreadsheet
             //CptS321.Spreadsheet ss = new CptS321.Spreadsheet(50, 26); create a local form
 
 
-            ss.triggerEvent();
+            //ss.triggerEvent();
             
             
 
@@ -58,11 +60,50 @@ namespace Spreadsheet
 
         }
 
+        private void editCell(object sender, DataGridViewCellCancelEventArgs e)
+        {
+            int row = e.RowIndex;
+            int col = e.ColumnIndex;
+            
+            dataGridView2.Rows[row].Cells[col].Value = (ss.GetCell(col, row)).Text;
+            textBox1.Text = (ss.GetCell(col, row)).Text;
+            textBox2.Text = dataGridView2.Columns[col].HeaderText;
+            textBox2.AppendText((row+1).ToString());
+
+        }
+
+        private void endEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            int row = e.RowIndex;
+            int col = e.ColumnIndex;
+            string text = "";
+            Cell tempCell = ss.GetCell(col, row);
+            text = dataGridView2.Rows[row].Cells[col].Value.ToString();
+            textBox1.Text = text;
+            tempCell.Text = text;
+            textBox1.Text = tempCell.Text;
+        }
+
+        void textBox1_Enter(object sender, KeyEventArgs e)
+        {
+            if (e.KeyData == Keys.Enter)
+            {
+                dataGridView2.Focus();
+            }
+        }
+
+        void textBox1_Exit(object sender, EventArgs e)
+        {
+            ss.GetCell(textBox2.Text).Text = textBox1.Text;
+        }
         public void Form1CellPropertyChanged(object sender, PropertyChangedEventArgs e) //specific cell updated, now need to update specific grid view
         {
 
-            dataGridView2.Rows[((Cell) sender).RowIndex].Cells[((Cell) sender).ColumnIndex].Value =
-                ((Cell) sender).Value;
+            Cell tempCell = (Cell) sender;
+            if (tempCell != null && e.PropertyName == "Value")
+            {
+                dataGridView2.Rows[tempCell.RowIndex].Cells[tempCell.ColumnIndex].Value = tempCell.Value;
+            }
 
 
         }
