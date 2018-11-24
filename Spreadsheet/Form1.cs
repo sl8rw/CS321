@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -132,6 +133,87 @@ namespace Spreadsheet
             }
         }
 
+        private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
+        {
+
+        }
+
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog savedFile = new SaveFileDialog(); //refer to MSDN filedialog.filter property online-->go to examples for xml dialog
+            savedFile.Filter = "XML Files (*.xml)|*.xml";
+            savedFile.DefaultExt = "xml";
+            //refer to filedialog.addextension property on MSDN
+            savedFile.AddExtension = true;
+            dataGridView2.EndEdit();
+            if (ss.changedCells.Count != 0) //cells have been changed confirmation
+            {
+                if (savedFile.ShowDialog() == DialogResult.OK)
+                {
+                    Stream fileStream = savedFile.OpenFile();
+                    ss.SaveXML(fileStream);
+                    fileStream.Close();
+                }
+            }
+            else
+            {
+                {
+                    MessageBox.Show("Nothing has been edited.");
+                }
+            }
+
+
+
+        }
+
+        private void loadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog loadedFile=new OpenFileDialog();
+            loadedFile.Filter = "XML Files (*.xml)|*.xml";
+            loadedFile.DefaultExt = "xml";
+            loadedFile.AddExtension = true;
+            dataGridView2.EndEdit();
+
+            if (loadedFile.ShowDialog() == DialogResult.OK)
+            {
+                dataGridView2.ClearSelection();
+                Stream fileStream = loadedFile.OpenFile();
+                ss.LoadXML(fileStream);
+                fileStream.Close();
+            }
+            else
+            {
+                MessageBox.Show("Error: Unable to Open File.");
+            }
+        }
+
+        private void aboutToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            string aboutMessage="CS 321 Spreadsheet" + Environment.NewLine + "Program Version: 5.0" + Environment.NewLine + "Author: Slater Weinstock" + Environment.NewLine + "Email: slater.weinstock@wsu.edu" + Environment.NewLine + "Copyright (2018)" + Environment.NewLine + Environment.NewLine + "This work is licensed under a Creative Commons Attribution 4.0 International License." + Environment.NewLine + "There is absolutely no warranty to this program.  Good luck :) "; ;
+            string aboutMe =
+                "About Me";
+      
+
+            MessageBoxButtons buttons = MessageBoxButtons.OK;
+            DialogResult result;
+
+            result = MessageBox.Show(aboutMessage, aboutMe, buttons);
+
+            if (result == System.Windows.Forms.DialogResult.OK)
+            {
+                this.Close();
+            }
+        }
+
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 
         /*private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)

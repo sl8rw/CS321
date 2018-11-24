@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Xml;
 
 namespace CptS321
 {
@@ -155,5 +157,82 @@ namespace CptS321
             baseCells[4, 10].Value = "50";
             baseCells[6, 12].Text = "=E10"; //It's G because 0,1,2,3   -->10/09/2018 
         }*/
+
+        public void SaveXML(Stream ssXML) //saves cells that have been changed
+        {
+            XmlWriterSettings xmlSettings=new XmlWriterSettings();
+            //need to write elements on new lines with proper indentation
+            xmlSettings.Indent = true;
+            using (XmlWriter writer = XmlWriter.Create(ssXML, xmlSettings))
+            {
+                writer.WriteStartDocument();
+                writer.WriteStartElement("Spreadsheet");
+                foreach (Cell cell in changedCells)
+                {
+                    writer.WriteStartElement("Cell");
+                    writer.WriteElementString("Column", cell.ColumnIndex.ToString());
+                    writer.WriteElementString("Row", cell.RowIndex.ToString());
+                    writer.WriteElementString("Text", cell.Text);
+                    writer.WriteEndElement();
+                }
+
+                writer.WriteEndElement();
+                writer.WriteEndDocument();
+                writer.Dispose(); //releases all resources by text writer
+            }
+        }
+
+        public void LoadXML(Stream ssXML)
+        {
+            foreach (Cell cell in baseCells)
+            {
+                cell.Text = "";
+            }
+
+            XmlReader reader = XmlReader.Create(ssXML);
+            changedCells.Clear();
+            while (reader.Read())
+            {
+                if (reader.Name == "Cell")
+                {
+                    string cText = null;
+                    int row=0 , column = 0;
+                    while (reader.Read())
+                    {
+                        if (reader.IsStartElement())
+                        {
+                            if (reader.Name == "Row")
+                            {
+                                reader.Read();
+                                row = Convert.ToInt32(reader.Value);
+                            }
+                            else if (reader.Name == "Column")
+                            {
+                                reader.Read();
+                                column = Convert.ToInt32(reader.Value);
+                            }
+                            else if (reader.Name == "Text")
+                            {
+                                reader.Read();
+                                cText = reader.Value;
+                                
+                            }
+                        }
+                        else if (reader.Name == "Cell")
+                        {
+                            break;
+                        }
+                    }
+
+                    if (cText != null)
+                    {
+                        this.baseCells[column, row].Text = cText;
+                    }
+                }
+            }
+
+            reader.Dispose();
+        }
+        
     }
 }
