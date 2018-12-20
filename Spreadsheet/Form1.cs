@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -33,6 +34,8 @@ namespace Spreadsheet
             dataGridView2.Columns.Clear();
             ss =new CptS321.Spreadsheet(26,50);
             ss.CellPropertyChanged += Form1CellPropertyChanged; //subscription
+            dataGridView2.CellBeginEdit += editCell;
+            dataGridView2.CellEndEdit += endEdit;
            
             for (int i = 65; i <= 90; i++) //ASCII codes for capital letters A - Z
             {
@@ -50,7 +53,7 @@ namespace Spreadsheet
             //CptS321.Spreadsheet ss = new CptS321.Spreadsheet(50, 26); create a local form
 
 
-            ss.triggerEvent();
+            //ss.triggerEvent();
             
             
 
@@ -58,11 +61,50 @@ namespace Spreadsheet
 
         }
 
+        private void editCell(object sender, DataGridViewCellCancelEventArgs e)
+        {
+            int row = e.RowIndex;
+            int col = e.ColumnIndex;
+            
+            dataGridView2.Rows[row].Cells[col].Value = (ss.GetCell(col, row)).Text;
+            textBox1.Text = (ss.GetCell(col, row)).Text;
+            textBox2.Text = dataGridView2.Columns[col].HeaderText;
+            textBox2.AppendText((row+1).ToString());
+
+        }
+
+        private void endEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            int row = e.RowIndex;
+            int col = e.ColumnIndex;
+            string text = "";
+            Cell tempCell = ss.GetCell(col, row);
+            text = dataGridView2.Rows[row].Cells[col].Value.ToString();
+            textBox1.Text = text;
+            tempCell.Text = text;
+            textBox1.Text = tempCell.Text;
+        }
+
+        void textBox1_Enter(object sender, KeyEventArgs e)
+        {
+            if (e.KeyData == Keys.Enter)
+            {
+                dataGridView2.Focus();
+            }
+        }
+
+        void textBox1_Exit(object sender, EventArgs e)
+        {
+            ss.GetCell(textBox2.Text).Text = textBox1.Text;
+        }
         public void Form1CellPropertyChanged(object sender, PropertyChangedEventArgs e) //specific cell updated, now need to update specific grid view
         {
 
-            dataGridView2.Rows[((Cell) sender).RowIndex].Cells[((Cell) sender).ColumnIndex].Value =
-                ((Cell) sender).Value;
+            Cell tempCell = (Cell) sender;
+            if (tempCell != null && e.PropertyName == "Value")
+            {
+                dataGridView2.Rows[tempCell.RowIndex].Cells[tempCell.ColumnIndex].Value = tempCell.Value;
+            }
 
 
         }
@@ -91,6 +133,87 @@ namespace Spreadsheet
             }
         }
 
+        private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
+        {
+
+        }
+
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog savedFile = new SaveFileDialog(); //refer to MSDN filedialog.filter property online-->go to examples for xml dialog
+            savedFile.Filter = "XML Files (*.xml)|*.xml";
+            savedFile.DefaultExt = "xml";
+            //refer to filedialog.addextension property on MSDN
+            savedFile.AddExtension = true;
+            dataGridView2.EndEdit();
+            if (ss.changedCells.Count != 0) //cells have been changed confirmation
+            {
+                if (savedFile.ShowDialog() == DialogResult.OK)
+                {
+                    Stream fileStream = savedFile.OpenFile();
+                    ss.SaveXML(fileStream);
+                    fileStream.Close();
+                }
+            }
+            else
+            {
+                {
+                    MessageBox.Show("Nothing has been edited.");
+                }
+            }
+
+
+
+        }
+
+        private void loadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog loadedFile=new OpenFileDialog();
+            loadedFile.Filter = "XML Files (*.xml)|*.xml";
+            loadedFile.DefaultExt = "xml";
+            loadedFile.AddExtension = true;
+            dataGridView2.EndEdit();
+
+            if (loadedFile.ShowDialog() == DialogResult.OK)
+            {
+                dataGridView2.ClearSelection();
+                Stream fileStream = loadedFile.OpenFile();
+                ss.LoadXML(fileStream);
+                fileStream.Close();
+            }
+            else
+            {
+                MessageBox.Show("Error: Unable to Open File.");
+            }
+        }
+
+        private void aboutToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            string aboutMessage="CS 321 Spreadsheet" + Environment.NewLine + "Program Version: 5.0" + Environment.NewLine + "Author: Slater Weinstock" + Environment.NewLine + "Email: slater.weinstock@wsu.edu" + Environment.NewLine + "Copyright (2018)" + Environment.NewLine + Environment.NewLine + "This work is licensed under a Creative Commons Attribution 4.0 International License." + Environment.NewLine + "There is absolutely no warranty to this program.  Good luck :) "; ;
+            string aboutMe =
+                "About Me";
+      
+
+            MessageBoxButtons buttons = MessageBoxButtons.OK;
+            DialogResult result;
+
+            result = MessageBox.Show(aboutMessage, aboutMe, buttons);
+
+            if (result == System.Windows.Forms.DialogResult.OK)
+            {
+                this.Close();
+            }
+        }
+
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 
         /*private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
