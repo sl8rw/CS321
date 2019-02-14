@@ -1,6 +1,0 @@
-C:\Users\slaterweinstock\source\repos\Spreadsheet\SpreadsheetEngine\bin\Debug\SpreadsheetEngine.dll
-C:\Users\slaterweinstock\source\repos\Spreadsheet\SpreadsheetEngine\bin\Debug\SpreadsheetEngine.pdb
-C:\Users\slaterweinstock\source\repos\Spreadsheet\SpreadsheetEngine\obj\Debug\SpreadsheetEngine.csprojAssemblyReference.cache
-C:\Users\slaterweinstock\source\repos\Spreadsheet\SpreadsheetEngine\obj\Debug\SpreadsheetEngine.csproj.CoreCompileInputs.cache
-C:\Users\slaterweinstock\source\repos\Spreadsheet\SpreadsheetEngine\obj\Debug\SpreadsheetEngine.dll
-C:\Users\slaterweinstock\source\repos\Spreadsheet\SpreadsheetEngine\obj\Debug\SpreadsheetEngine.pdb
